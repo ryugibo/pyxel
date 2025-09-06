@@ -89,31 +89,6 @@ impl PlatformSdl2 {
                     pyxel_events.extend(vec![Event::Quit]);
                 }
 
-                //
-                // Keyboard
-                //
-                SDL_KEYDOWN => {
-                    if unsafe { sdl_event.key.repeat } == 0 {
-                        let key = unsafe { sdl_event.key.keysym.sym } as Key;
-                        pyxel_events.push(Event::KeyPressed { key });
-
-                        if let Some(unified_key) = key_to_virtual_key(key) {
-                            pyxel_events.push(Event::KeyPressed { key: unified_key });
-                        }
-                    }
-                }
-
-                SDL_KEYUP => {
-                    if unsafe { sdl_event.key.repeat } == 0 {
-                        let key = unsafe { sdl_event.key.keysym.sym } as Key;
-                        pyxel_events.push(Event::KeyReleased { key });
-
-                        if let Some(unified_key) = key_to_virtual_key(key) {
-                            pyxel_events.push(Event::KeyReleased { key: unified_key });
-                        }
-                    }
-                }
-
                 SDL_TEXTINPUT => unsafe {
                     let c_str = CStr::from_ptr(sdl_event.text.text.as_ptr().cast::<c_char>());
                     if let Ok(text) = c_str.to_str() {
@@ -275,6 +250,43 @@ impl PlatformSdl2 {
                 _ => {}
             }
         }
+
+        //
+        // Keyboard
+        //
+        let keyboard_state = unsafe {
+            let mut num_keys = 0;
+            let ptr = SDL_GetKeyboardState(&mut num_keys);
+            std::slice::from_raw_parts(ptr, num_keys as usize)
+        };
+        if self.prev_keyboard_state.is_empty() {
+            self.prev_keyboard_state = keyboard_state.to_vec();
+        }
+        for i in 0..keyboard_state.len() {
+            let key_down = keyboard_state[i] != 0;
+            let prev_key_down = self.prev_keyboard_state[i] != 0;
+            if key_down != prev_key_down {
+                let scancode = i as SDL_Scancode;
+                let key = unsafe { SDL_GetKeyFromScancode(scancode) } as Key;
+                if key != KEY_UNKNOWN {
+                    let event = if key_down {
+                        Event::KeyPressed { key }
+                    } else {
+                        Event::KeyReleased { key }
+                    };
+                    pyxel_events.push(event);
+                    if let Some(unified_key) = key_to_virtual_key(key) {
+                        let event = if key_down {
+                            Event::KeyPressed { key: unified_key }
+                        } else {
+                            Event::KeyReleased { key: unified_key }
+                        };
+                        pyxel_events.push(event);
+                    }
+                }
+            }
+        }
+        self.prev_keyboard_state = keyboard_state.to_vec();
 
         //
         // Mouse Motion

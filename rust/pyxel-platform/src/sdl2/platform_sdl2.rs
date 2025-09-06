@@ -61,6 +61,7 @@ pub struct PlatformSdl2 {
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub gamepads: Vec<Gamepad>,
+    pub prev_keyboard_state: Vec<u8>,
     #[cfg(target_os = "emscripten")]
     pub virtual_gamepad_states: [bool; 10],
     #[cfg(not(target_os = "emscripten"))]
@@ -76,6 +77,7 @@ impl PlatformSdl2 {
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
             gamepads: Vec::new(),
+            prev_keyboard_state: Vec::new(),
             #[cfg(target_os = "emscripten")]
             virtual_gamepad_states: [false; 10],
             #[cfg(not(target_os = "emscripten"))]
