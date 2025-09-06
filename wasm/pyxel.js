@@ -421,11 +421,19 @@ function _hookFileOperations(pyodide, root) {
 }
 
 function _isTouchDevice() {
-  return (
-    "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0 ||
-    navigator.msMaxTouchPoints > 0
-  );
+  if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    return true;
+  }
+
+  if ('ontouchstart' in window) {
+    return true;
+  }
+
+  if (navigator.maxTouchPoints && navigator.maxTouchPoints > 1) {
+    return true;
+  }
+
+  return false;
 }
 
 async function _waitForInput() {
