@@ -113,7 +113,7 @@ impl PlatformSdl2 {
                         }
                     }
                 }
-
+/*
                 SDL_TEXTINPUT => unsafe {
                     let c_str = CStr::from_ptr(sdl_event.text.text.as_ptr().cast::<c_char>());
                     if let Ok(text) = c_str.to_str() {
@@ -121,7 +121,7 @@ impl PlatformSdl2 {
                         pyxel_events.push(Event::TextInput { text });
                     }
                 },
-
+*/
                 //
                 // Mouse Button
                 //
