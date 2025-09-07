@@ -38,6 +38,22 @@ extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int)
     (*guard)(stream);
 }
 
+static mut FILTER_TEXT_INPUT: bool = false;
+
+extern "C" fn event_filter(_userdata: *mut c_void, event: *mut SDL_Event) -> c_int {
+    unsafe {
+        if event.is_null() {
+            return 1;
+        }
+        let event_type = (*event).type_ as SDL_EventType;
+        if FILTER_TEXT_INPUT && event_type == SDL_TEXTINPUT {
+            0
+        } else {
+            1
+        }
+    }
+}
+
 pub struct PlatformSdl2 {
     pub window: *mut SDL_Window,
     pub gl_context: *mut Context,
@@ -128,6 +144,13 @@ impl PlatformSdl2 {
     //
     // Window
     //
+    pub fn init_event_filter(&mut self, filter_text_input: bool) {
+        unsafe {
+            FILTER_TEXT_INPUT = filter_text_input;
+            SDL_SetEventFilter(Some(event_filter), std::ptr::null_mut());
+        }
+    }
+
     pub fn init_window(&mut self, title: &str, width: u32, height: u32) {
         let title = CString::new(title).unwrap();
         unsafe {

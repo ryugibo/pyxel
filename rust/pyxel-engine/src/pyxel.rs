@@ -83,6 +83,7 @@ pub fn init(
     display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
+    filter_text_input: Option<bool>,
 ) -> Pyxel {
     assert!(
         !IS_INITIALIZED.swap(true, Ordering::Relaxed),
@@ -96,6 +97,7 @@ pub fn init(
 
     // Platform
     pyxel_platform::init();
+    pyxel_platform::init_event_filter(filter_text_input.unwrap_or(false));
 
     let (display_width, display_height) = pyxel_platform::display_size();
     let display_scale = display_scale

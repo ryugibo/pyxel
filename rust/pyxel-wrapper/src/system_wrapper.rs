@@ -9,7 +9,7 @@ use crate::pyxel_singleton::{pyxel, set_pyxel_instance};
 
 #[pyfunction]
 #[pyo3(
-    signature = (width, height, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None)
+    signature = (width, height, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, filter_text_input=None)
 )]
 fn init(
     py: Python,
@@ -21,6 +21,7 @@ fn init(
     display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
+    filter_text_input: Option<bool>,
 ) -> PyResult<()> {
     let locals = PyDict::new(py);
     locals.set_item("os", py.import("os")?)?;
@@ -38,6 +39,7 @@ fn init(
         display_scale,
         capture_scale,
         capture_sec,
+        filter_text_input,
     ));
 
     Ok(())

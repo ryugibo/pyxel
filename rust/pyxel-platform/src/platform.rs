@@ -52,6 +52,10 @@ pub fn init_window(title: &str, width: u32, height: u32) {
     platform().init_window(title, width, height);
 }
 
+pub fn init_event_filter(filter_text_input: bool) {
+    platform().init_event_filter(filter_text_input);
+}
+
 pub fn window_pos() -> (i32, i32) {
     platform().window_pos()
 }
