@@ -151,6 +151,12 @@ impl PlatformSdl2 {
         }
     }
 
+    pub fn stop_text_input(&mut self) {
+        unsafe {
+            SDL_StopTextInput();
+        }
+    }
+
     pub fn init_window(&mut self, title: &str, width: u32, height: u32) {
         let title = CString::new(title).unwrap();
         unsafe {

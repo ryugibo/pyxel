@@ -56,6 +56,10 @@ pub fn init_event_filter(filter_text_input: bool) {
     platform().init_event_filter(filter_text_input);
 }
 
+pub fn stop_text_input() {
+    platform().stop_text_input();
+}
+
 pub fn window_pos() -> (i32, i32) {
     platform().window_pos()
 }
